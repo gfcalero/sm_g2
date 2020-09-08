@@ -1,0 +1,143 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>SISTEMAS MUERTOS - GRUPO 2</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="informatica_Forense"
+                  title="SISTEMAS MUERTOS - GRUPO 2"
+                  environment="web"
+                  feedback-link="https://github.com/Mrc0113/codelab-4-codelab">
+    
+      <google-codelab-step label="INTRODUCCIÓN" duration="2">
+        <p>En <a href="https://es.wikipedia.org/wiki/C%C3%B3mputo_forense" target="_blank">Informática forense</a> un Sistema Muerto, se presenta cuando la información que tenemos del incidente ocurrió en un lapso de tiempo anterior, sea este en (días, horas, semanas o meses) al momento de realizar el secuestro del equipo como en la siguientes situaciones:</p>
+<ol type="1">
+<li>Ataques que han ocasionado la caída de sistemas.</li>
+<li>Ataques o incidentes que comprometen el funcionamiento y hardware de equipos.</li>
+<li>Ataque a servidores</li>
+<li>Ataques en los cuales se comprometen la red local.</li>
+<li>Ataques e incidentes los cuales se tiene indicio que han ocurrido o vienen ocurriendo en determinado lapso de tiempo.</li>
+</ol>
+<p class="image-container"><img alt="image_caption" src="img\45e3c7b351436186.jpg"></p>
+<p>En este codelab se presentará un estudio de caso para el análisis y desarrollo en el proceso de un sistema muerto.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="OBJETIVO DE APRENDIZAJE" duration="1">
+        <aside class="special"><p><strong>Evaluar un sistema muerto, considerando que la información de la que dispondremos del incidente ya se generó en un lapso anterior. Asimismo, debemos tener presente que la misma no se encuentra en línea y está contenida en un espacio de almacenamiento del equipo generalmente apagado.</strong></p>
+</aside>
+<p class="image-container"><img alt="image_caption" src="img\4f8caae2e85a7b48.jpg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ANTECEDENTES" duration="2">
+        <aside class="special"><p>A principios de 2018 comienza a circular por Internet un nuevo &#34;gusano&#34;. Éste aprovecha una vulnerabilidad de Microsoft Windows XP que había sido publicada oficialmente un par de semanas atrás y que se acompañó del correspondiente &#34;parche&#34;. Se conoce que el &#34;gusano&#34; se extiende auto enviándose por e-mail usando todas las direcciones que encuentra en el sistema infectado, además está programado para generar diferentes nombres de archivos adjuntos y sus extensiones pueden variar, al tiempo que elige entre un centenar de asuntos y cuerpos de mensaje diferentes. Cuando el &#34;gusano&#34; infecta un sistema realiza una escalada de privilegios hasta obtener derechos de Administrador, realizando entonces la descarga, desde diferentes direcciones IP y vía FTP, de un agente para la ejecución de ataques de denegación de servicio distribuido (DDoS). Aunque los fabricantes de software antivirus alertan inmediatamente del &#34;gusano&#34; su expansión ha sido muy rápida y aún no se dispone de su firma. Su organización ya ha sufrido una infección importante por la ejecución del &#34;gusano&#34; unas tres horas antes de que dispusiese de la firma para su antivirus y este se encuentra activo en algunos sistemas de su red.</p>
+</aside>
+<p>El caso de estudio fue obtenido como escenario de ejemplo en esta <a href="http://seguridad.unicauca.edu.co/2019-05-27-Diapositivas-Electiva-iforense.pdf" target="_blank">presentación</a> de la Universidad del Cauca.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ASPECTOS LEGALES" duration="2">
+        <p>Delitos contra la seguridad de los activos de los sistemas de información y comunicación tipificados en el <em>COIP 2014</em> en Ecuador:</p>
+<ul>
+<li><strong>Art. 229.- Revelación ilegal de base de datos.-</strong> Será sancionada con pena privativa de libertad de uno a tres años.</li>
+<li><strong>Art. 230.- Interceptación ilegal de datos.-</strong> Será sancionada con pena privativa de libertad de tres a cinco años</li>
+<li><strong>Art. 231.- Transferencia electrónica de activo patrimonial.-</strong> Será sancionada con pena privativa de libertad de tres a cinco años.</li>
+<li><strong>Art. 232.- Ataque a la integridad de sistemas informáticos.-</strong> Será sancionada con pena privativa de libertad de tres a cinco años.</li>
+</ul>
+<p>Para obtener mayor información sobre la tipificación de los delitos mencionados puede revisar el COIP <a href="https://tbinternet.ohchr.org/Treaties/CEDAW/Shared%20Documents/ECU/INT_CEDAW_ARL_ECU_18950_S.pdf" target="_blank">aquí</a>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="COMPONENTES" duration="7">
+        <h2 is-upgraded>Recopilación de evidencias</h2>
+<p>Ahora que ya está preparado para la recolección de evidencias tendrá que decidir sicomienza a tomar muestras sobre el sistema &#34;vivo&#34; o &#34;muerto&#34;. Tenga presente que en el sistema habrá pruebas ocultas con diferentes niveles de volatilidad, como los registros del procesador, estructuras de datos en la memoria RAM o memoria de tipo caché, conexiones de red activas, usuarios y procesos actuales, sistema de archivos, etc.</p>
+<h2 is-upgraded>Herramientas para Análisis Forense Digital</h2>
+<p>Hasta ahora se ha podido comprobar que una de las dificultades que se encontrará el investigador a la hora de analizar determinadas evidencias digitales es que los atacantes emplean cada vez herramientas más sigilosas y perfeccionadas para realizar sus asaltos.</p>
+<h2 is-upgraded>Software de Libre Distribución y Open Source</h2>
+<p>Vamos a comenzar con una recopilación de herramientas que necesitan ser ejecutadas bajo un sistema operativo anfitrión, bien sea MS Windows o UNIX/Linux.</p>
+<h3 is-upgraded>- The Forensic ToolKit</h3>
+<p>Se trata de una colección de herramientas forenses para plataformas Windows, creado por el equipo de Foundstone. Puede descargarlo desde <a href="https://accessdata.com/products-services/forensic-toolkit-ftk" target="_blank">aqui</a>, donde además encontrará gran cantidad de herramientas de seguridad. Este ToolKit le permitirá recopilar información sobre el ataque, y se compone de una serie aplicaciones en línea de comandos que permiten generar diversos informes y estadísticas del sistema de archivos a estudiar. Para poder utilizarlos deberá disponer de un intérprete de comandos como cmd.exe.</p>
+<p class="image-container"><img alt="image_caption" src="img\938739f59489e2f0.png"></p>
+<h3 is-upgraded>- The Sleuth Kit y Autopsy</h3>
+<p>Este conjunto, cuyo autor es Brian Carrier, consiste en una colección de herramientas forenses para entornos UNIX/Linux. Incluye algunas partes del conocido The Coroners ToolKit (TCT) de Dan Farmer. Puede analizar archivos de datos de evidencias generadas con utilidades de disco como por ejemplo dd. Pese a ser de libre distribución (puede descargarlo del <a href="https://www.sleuthkit.org/" target="_blank">sitio Web</a>) ofrece más detalle que algunos programas de pago.</p>
+<p class="image-container"><img alt="image_caption" src="img\cf2d47356cf2a3c.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="DESARROLLO" duration="20">
+        <p>Para el desarrollo y correspondiente análisis del caso de estudio se utilizará la herramienta <strong>HELIX CD</strong> disponible en esta <a href="http://www.e-fense.com/products.php" target="_blank">dirección</a>.</p>
+<h2 is-upgraded>HELIX CD</h2>
+<p>Se trata de un Live CD de respuesta ante incidentes, basado en una distribución Linux denominada Knoppix (que a su vez está basada en Debian). Este CD ofrece dos modos de funcionamiento, tras ejecutarlo nos permitirá elegir entre arrancar un entorno MS Windows o uno tipo Linux. En el primero de ellos disponemos de un entorno con un conjunto de herramientas, casi 90 Mb, que nos permitirá principalmente interactuar con sistemas &#34;muerto&#34;, pudiendo recuperar la información volátil del sistema.</p>
+<ul>
+<li>Inserte el CD Helix en la unidad de CD / DVD de la computadora del sospechoso. Helix tiene una ejecución automática, por lo que debe comenzar de inmediato, pero tenga cuidado. Si ha iniciado sesión como otra cosa que no sea administrador, no podrá volcar la memoria física completa. Cierre la ejecución automática y elija la opción Ejecutar como para iniciar el software Helix y proporcione las credenciales de administrador.</li>
+</ul>
+<aside class="warning"><p><strong>ADVERTENCIA</strong>: ¡NO cierre la sesión para iniciar sesión como Administrador! Finalizar una sesión inevitablemente cambiará y contaminará el contenido de RAM, ya que muchos procesos se cierran al cerrar sesión.</p>
+</aside>
+<p class="image-container"><img alt="image_caption" src="img\d26b342d8e06a383.jpg"></p>
+<ul>
+<li>Cuando se inicie Helix, habrá una pantalla de advertencia que indica que Helix no podrá proteger el entorno del sistema operativo sospechoso de los cambios, ya que se está ejecutando dentro del entorno del sistema operativo sospechoso.</li>
+<li>Verá la pantalla de inicio de la herramienta Helix. El primer ícono es solo una vista previa de la información del sistema, por lo que no es demasiado útil. Vaya a la segunda opción: adquisición. Le pedirá la fuente. Elija la memoria física y dirija la salida a la unidad USB de pruebas.</li>
+</ul>
+<p class="image-container"><img alt="image_caption" src="img\92cc72d9485973d7.jpg"></p>
+<ul>
+<li>La adquisición le solicitará que se descargue la fuente: elija Memoria física. Solicitará una segunda confirmación e iniciará el volcado.</li>
+<li>Una vez finalizada la descarga de memoria, elija la respuesta a incidentes (tercer icono en el menú de la izquierda) y haga clic en la flecha pequeña para ir a la segunda pantalla (que se muestra a continuación). Ejecute WinAudit.</li>
+<li>Haga clic en el único enlace y deje que realice un inventario del sistema. Guarde el resultado como un PDF en su evidencia USB.</li>
+</ul>
+<p class="image-container"><img alt="image_caption" src="img\4bbe3c262b3baa75.jpg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="CONCLUSIONES" duration="2">
+        <aside class="special"><p>Con este trabajo se ha pretendido realizar una primera incursión en el apasionante y novedoso mundo del Análisis Forense Digital, exponiendo aquellas características y particularidades propias de esta disciplina de la seguridad informática. Se ha enfocado el tema desde el punto de vista de una herramienta indispensable que toda organización debe contemplar dentro de su política de seguridad y enmarcada dentro del proceso de respuesta a incidentes en los sistemas informáticos.</p>
+</aside>
+<aside class="special"><p>Se ha intentado destacar la necesidad imperiosa de aplicar metodologías y procedimientos específicos con el fin de asegurar la garantía de calidad de las evidencias durante todo el proceso forense, haciendo hincapié en la recopilación y custodia de las evidencias digitales. Se han expuesto también las diferencias a la hora de llevar a cabo un análisis forense en dos de los sistemas operativos más extendidos, MS Windows y UNIX/Linux, y cómo podemos disponer de herramientas software específicas que nos pueden ayudar en el análisis, sin entrar en las de tipo hardware.</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="REFERENCIAS" duration="1">
+        <ul>
+<li>Genbeta. (2016). Cómo navegar de forma anónima en Internet con Tor Browser. mayo 17, 2018, de Genbeta. <a href="https://www.genbeta.com/navegadores/como-navegar-de-forma-anonima-en-internet-con-tor-browser" target="_blank">Sitio web</a></li>
+<li>SP-800-61 &#34;Computer Security Incident Handling Guide&#34;. T. Grance. NIST-USA. 2002 &#34;GIAC Security Essentials, Practical Assignment&#34; Version 1.4b. Tan Koon Yaw. SANS Institute 2003. 5. s. &#34;Forensic Examination of Digital Evidence: A Guide for Law Enforcement&#34;. John Ashcroft. U.S. Dep. of Justice, Apr. 2004 &#34;Helix 1.7 for Beginners&#34;. BJ Gleason and Drew Fahey. Manual Version Mar. 2006 &#34;First Responder&#39;s Manual&#34;. U.S. Dep. of Energy Computer Forensic Laboratory. 1999. &#34;Análisis Forense Digital GNU/Linux&#34;. David Ditrich y Ervin Sarkisov. 2002 RFC-3227. &#34;Guidelines for Evidence Collection and Archiving&#34;. Feb. 2002. Análisis técnicos del Reto Forense ediciones 1 y 2 (comunidad RedIris). 2004 y 2005.</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
