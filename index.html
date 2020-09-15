@@ -1,0 +1,171 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>SISTEMAS MUERTOS - GRUPO 2</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="informatica_Forense2"
+                  title="SISTEMAS MUERTOS - GRUPO 2"
+                  environment="web"
+                  feedback-link="https://github.com/Mrc0113/codelab-4-codelab">
+    
+      <google-codelab-step label="INTRODUCCIÓN" duration="2">
+        <p>En <a href="https://es.wikipedia.org/wiki/C%C3%B3mputo_forense" target="_blank">Informática forense</a> un Sistema Muerto, se presenta cuando la información que tenemos del incidente ocurrió en un lapso de tiempo anterior, sea este en (días, horas, semanas o meses) al momento de realizar el secuestro del equipo como en la siguientes situaciones:</p>
+<ol type="1">
+<li>Ataques que han ocasionado la caída de sistemas.</li>
+<li>Ataques o incidentes que comprometen el funcionamiento y hardware de equipos.</li>
+<li>Ataque a servidores</li>
+<li>Ataques en los cuales se comprometen la red local.</li>
+<li>Ataques e incidentes los cuales se tiene indicio que han ocurrido o vienen ocurriendo en determinado lapso de tiempo.</li>
+</ol>
+<p class="image-container"><img alt="image_caption" src="img\45e3c7b351436186.jpg"></p>
+<p>En este codelab se presentará un estudio de caso para el análisis y desarrollo en el proceso de un sistema muerto.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="OBJETIVO DE APRENDIZAJE" duration="1">
+        <aside class="special"><p><strong>Evaluar un sistema muerto, considerando que la información de la que dispondremos del incidente ya se generó en un lapso anterior. Asimismo, debemos tener presente que la misma no se encuentra en línea y está contenida en un espacio de almacenamiento del equipo generalmente apagado.</strong></p>
+</aside>
+<p class="image-container"><img alt="image_caption" src="img\4f8caae2e85a7b48.jpg"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ANTECEDENTES" duration="2">
+        <aside class="special"><p>Las autoridades de la empresa &#34;X&#34; requieren el análisis forense de dos discos rígidos para determinar si los empleados del área informática de la empresa comparten por Internet materiales pornográficos y lascivos en el trabajo, acción llamada habitualmente como &#34;sneak and Peak&#34;. Se solicita que se identifique todos los sistemas informáticos que contienen 10 o más imágenes pornográficas. Ellos tienen la intención de tomar medidas administrativas contra los empleados que incurran en dicha falta</p>
+</aside>
+<p>El caso de estudio fue obtenido como escenario de ejemplo en esta <a href="https://drive.google.com/file/d/1X9x1XfyNI0_gkRYC1r66FBOndyRsC4h4/view?usp=sharing" target="_blank">presentación</a> .</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ASPECTOS LEGALES" duration="2">
+        <p>Delitos contra la seguridad de los activos de los sistemas de información y comunicación tipificados en el <em>COIP 2014</em> en Ecuador:</p>
+<ul>
+<li><strong>Art. 229.- Revelación ilegal de base de datos.-</strong> Será sancionada con pena privativa de libertad de uno a tres años.</li>
+<li><strong>Art. 230.- Interceptación ilegal de datos.-</strong> Será sancionada con pena privativa de libertad de tres a cinco años</li>
+<li><strong>Art. 231.- Transferencia electrónica de activo patrimonial.-</strong> Será sancionada con pena privativa de libertad de tres a cinco años.</li>
+<li><strong>Art. 232.- Ataque a la integridad de sistemas informáticos.-</strong> Será sancionada con pena privativa de libertad de tres a cinco años.</li>
+</ul>
+<p>Para obtener mayor información sobre la tipificación de los delitos mencionados puede revisar el COIP <a href="https://tbinternet.ohchr.org/Treaties/CEDAW/Shared%20Documents/ECU/INT_CEDAW_ARL_ECU_18950_S.pdf" target="_blank">aquí</a>.</p>
+<p>Con respecto a los criterios que permitirán clasificar cierto contenido como pornográfico, se utilizará como referencia el artículo 69 del Código de la Niñez y Adolescencia de Ecuador en el que se menciona que se considera como pornografía infantil toda representación, por cualquier medio, de un niño, niña y adolescente en actividades sexuales explícitas,reales o simuladas; o de sus órganos genitales, con la finalidad de promover, sugerir o evocar la actividad sexual.</p>
+<p>Si desea conocer mayor contenido acerca de este tema puede consultar <a href="https://www.gob.ec/sites/default/files/regulations/2018-09/Documento_C%C3%B3digo-Ni%C3%B1ez-Adolescencia.pdf" target="_blank">aquí</a>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="COMPONENTES" duration="7">
+        <h2 is-upgraded>Recopilación de evidencias</h2>
+<p>Ahora que ya está preparado para la recolección de evidencias tendrá que decidir sicomienza a tomar muestras sobre el sistema &#34;vivo&#34; o &#34;muerto&#34;. Tenga presente que en el sistema habrá pruebas ocultas con diferentes niveles de volatilidad, como los registros del procesador, estructuras de datos en la memoria RAM o memoria de tipo caché, conexiones de red activas, usuarios y procesos actuales, sistema de archivos, etc.</p>
+<h2 is-upgraded>Herramientas para Análisis Forense Digital</h2>
+<p>Hasta ahora se ha podido comprobar que una de las dificultades que se encontrará el investigador a la hora de analizar determinadas evidencias digitales es que los atacantes emplean cada vez herramientas más sigilosas y perfeccionadas para realizar sus asaltos.</p>
+<h2 is-upgraded>Software de Libre Distribución y Open Source</h2>
+<p>Vamos a comenzar con una recopilación de herramientas que necesitan ser ejecutadas bajo un sistema operativo anfitrión, bien sea MS Windows o UNIX/Linux.</p>
+<h3 is-upgraded>- The Forensic ToolKit</h3>
+<p>Se trata de una colección de herramientas forenses para plataformas Windows, creado por el equipo de Foundstone. Puede descargarlo desde <a href="https://accessdata.com/products-services/forensic-toolkit-ftk" target="_blank">aquí</a>, donde además encontrará gran cantidad de herramientas de seguridad. Este ToolKit le permitirá recopilar información sobre el ataque, y se compone de una serie aplicaciones en línea de comandos que permiten generar diversos informes y estadísticas del sistema de archivos a estudiar. Para poder utilizarlos deberá disponer de un intérprete de comandos como cmd.exe.</p>
+<p class="image-container"><img alt="image_caption" src="img\938739f59489e2f0.png"></p>
+<h3 is-upgraded>- The Sleuth Kit y Autopsy</h3>
+<p>Este conjunto, cuyo autor es Brian Carrier, consiste en una colección de herramientas forenses para entornos UNIX/Linux. Incluye algunas partes del conocido The Coroners ToolKit (TCT) de Dan Farmer. Puede analizar archivos de datos de evidencias generadas con utilidades de disco como por ejemplo dd. Pese a ser de libre distribución (puede descargarlo del <a href="https://www.sleuthkit.org/" target="_blank">sitio Web</a>) ofrece más detalle que algunos programas de pago.</p>
+<p class="image-container"><img alt="image_caption" src="img\cf2d47356cf2a3c.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="DESARROLLO" duration="20">
+        <h2 is-upgraded>Identificación de la Evidencia</h2>
+<p>De las 2 memorias USB entregadas, se procede a realizar las respectivas imágenes utilizando el software propietario FTK Imager, el cual es válido para realizar procesos de peritaje de acuerdo a la normativa del Consejo de la Judicatura de Ecuador.</p>
+<h2 is-upgraded>Preservación de la Evidencia</h2>
+<p>Se inicia el proceso de obtención de imágenes. Primero se crea la imagen del dispositivo 1.</p>
+<p class="image-container"><img alt="image_caption" src="img\cda7d7438559eaac.png"></p>
+<p>Definimos los parámetros necesarios e iniciamos la creación de la imagen.</p>
+<p class="image-container"><img alt="image_caption" src="img\d65712343dbe8a06.png"></p>
+<p>Comienza el proceso de obtención de imágenes.</p>
+<p class="image-container"><img alt="image_caption" src="img\ba5a1bc8ddd240bf.png"></p>
+<p>Verificamos los datos de la imagen donde se incluye el MD5. Estos datos están almacenados en un archivo txt con el mismo nombre de la imagen.</p>
+<p class="image-container"><img alt="image_caption" src="img\64c6e8fdb2b16aef.png"></p>
+<p>A continuación se procede a obtener la segunda imagen del dispositivo 2 repitiendo los mismo pasos.</p>
+<h2 is-upgraded>Análisis de la Evidencia</h2>
+<p>Ahora se agrega una nueva fuente de evidencia y seleccionamos archivo de imagen. Comenzamos por el dispositivo 1 para trabajar con la imagen de dicho dispositivo.</p>
+<p class="image-container"><img alt="image_caption" src="img\2f9436e0fe4c0497.png"></p>
+<p>Una vez que seleccionemos la ubicación de la imagen ya podremos trabajar con ella.</p>
+<p class="image-container"><img alt="image_caption" src="img\edb679b12724977c.png"></p>
+<p>Ahora se agrega una nueva fuente de evidencia y seleccionamos archivo de imagen para cargar la imágen del dispositivo 2. Y finalmente tendremos ambas imágenes disponibles. Se empieza por la revisión del contenido del dispositivo 1.</p>
+<p class="image-container"><img alt="image_caption" src="img\603b9c67e0eb0e5f.png"></p>
+<p>De entrada se puede comprobar que en la raíz del dispositivo no existen sino 2 fotografías, las cuales se proceden a revisar para determinar si son lascivas.</p>
+<p class="image-container"><img alt="image_caption" src="img\4e0ff2ba0fe84e7d.png"><img alt="image_caption" src="img\cb0d546a0f94b05d.png"></p>
+<p>Luego procedemos a revisar la única carpeta del dispositivo, pero tampoco encontramos contenido pornográfico.</p>
+<p class="image-container"><img alt="image_caption" src="img\43c94168b889bf18.png"></p>
+<p>De la misma forma se realiza la revisión en el dispositivo 2.</p>
+<h2 is-upgraded>Presentación de Resultados</h2>
+<h3 is-upgraded>Dispositivo 1</h3>
+<p class="image-container"><img alt="image_caption" src="img\357c08fd3ad199a2.png"></p>
+<aside class="warning"><p>El contenido multimedia es de tipo humorístico pícaro. A pesar de la evocación y la consiguiente subjetividad sexual que implica el contenido, se descarta que sea pornográfico, puesto que no se pueden apreciar a las personas en actividades sexuales explícitas. De esta forma se descarta que el propietario del dispositivo sea sujeto de la sanción administrativa que se pretende aplicar a quienes compartan material pornográfico.</p>
+</aside>
+<h3 is-upgraded>Dispositivo 2</h3>
+<p class="image-container"><img alt="image_caption" src="img\29af73a631a5808f.png"></p>
+<aside class="warning"><p>El contenido multimedia es de tipo recreativo, ambientado en la naturaleza. En las imágenes no se pueden apreciar personas, excepto por el video. E inclusive en el video tampoco se pueden observar a personas en actividades sexuales explícitas y por ello es imposible que sea material lascivo. De esta forma se descarta que el propietario del dispositivo sea sujeto de la sanción administrativa que se pretende aplicar a quienes compartan material pornográfico.</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="ANEXOS" duration="0">
+        <h2 is-upgraded>Evidencia del Peritaje</h2>
+<p>Se adjunta archivos resultantes como las imágenes y logs de los dispositivos, <a href="https://drive.google.com/drive/folders/1UELQHqaY9R6LZAj-ldHWtKDgRIvFnUeN?usp=sharing" target="_blank">aquí</a>.</p>
+<h2 is-upgraded>Informe de Peritaje</h2>
+<p>El informe como tal, del presente estudio de sistemas muertos se puede consultar en el siguiente <a href="https://drive.google.com/file/d/1N8-eqg2lzgodClvxatxBK1GYT3gnTUWt/view?usp=sharing" target="_blank">enlace</a>.</p>
+<h2 is-upgraded>Video demostrativo</h2>
+<p>Video del paso a paso <a href="https://www.youtube.com/watch?v=KABNwk67NbQ&feature=youtu.be" target="_blank">Aquí</a>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="CONCLUSIONES" duration="2">
+        <aside class="special"><p>La pericia concluyó descartando que el contenido de los dispositivos analizados sea de tipo pornográfico, pues en el primer caso se trata de memes, que únicamente persiguen un fin humorístico, y el segundo dispositivo sólo hay multimedia sobre la naturaleza.</p>
+</aside>
+<aside class="special"><p>Es importante determinar los criterios que permiten clasificar cierto contenido como pornográfico, puesto que podrían existir imágenes de desnudos artísticos, que si bien mostrarían los genitales de las personas, no se las mostraría en actividades sexuales explícitas.</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="REFERENCIAS" duration="1">
+        <ul>
+<li>Asamblea Nacional del Ecuador. (1 de Enero de 2013). CÓDIGO DE LA NIÑEZ Y ADOLESCENCIA. Obtenido en este <a href="https://www.gob.ec/sites/default/files/regulations/2018-09/Documento_C%C3%B3digo-Ni%C3%B1ez-Adolescencia.pdf" target="_blank">enlace</a>.</li>
+<li>Jaramillo, P. (1 de Junio de 2019). IMPACTO DE LAS TECNOLOGÍAS DE INFORMACIÓN Y COMUNICACIÓN (TICS) EN LOS FRAUDES INFORMÁTICOSJUZGADOS EN EL CONSEJO DE LA JUDICATURADE LA PROVINCIADE PICHINCHA. Obtenido en este <a href="http://repositorio.puce.edu.ec/bitstream/handle/22000/17774/Romina_Jaramillo_Tabajo_de_Titulacion.pdf?sequence=1&isAllowed=y" target="_blank">enlace</a>.</li>
+<li>Movistar Ecuador. (3 de Febrero de 2014). Pornografía infantil - Legislación Ecuatoriana sobre Contenidos de Abuso Sexual en Internet. Obtenido en este <a href="https://www.telefonica.com.ec/saladeprensa/wp-content/uploads/2015/02/Legislaci%C3%B3n-Pornograf%C3%ADa-Infantil-en-Ecuador-08-14.pdf" target="_blank">enlace</a>.</li>
+<li>Genbeta. (2016). Cómo navegar de forma anónima en Internet con Tor Browser. mayo 17, 2018, de Genbeta. <a href="https://www.genbeta.com/navegadores/como-navegar-de-forma-anonima-en-internet-con-tor-browser" target="_blank">Sitio Web</a>.</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
